@@ -59,6 +59,31 @@ describe('XRequestClient', () => {
     });
   });
 
+  it('removes inherited headers when a request override is undefined', async () => {
+    const client = new XRequestClient({
+      baseHeaders: {
+        Authorization: 'Bearer token',
+        'X-Guest-Token': 'guest-token',
+      },
+      transport: async (request) => ({
+        status: 200,
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ ok: true }),
+        request,
+      }),
+    });
+
+    await client.request('https://x.com/', {
+      headers: {
+        Authorization: undefined,
+        'X-Guest-Token': undefined,
+      },
+    });
+
+    expect(client.lastRequest?.headers).not.toHaveProperty('Authorization');
+    expect(client.lastRequest?.headers).not.toHaveProperty('X-Guest-Token');
+  });
+
   it('throws when a GraphQL response only contains errors', async () => {
     const client = new XRequestClient({
       transport: async () => ({

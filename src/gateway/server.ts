@@ -15,10 +15,31 @@ export interface GatewayServerOptions {
   adapterOptions?: AdapterFactoryOptions;
 }
 
+export async function initializeGatewayOptions(
+  options: GatewayServerOptions = {},
+): Promise<GatewayServerOptions> {
+  const adapterFactory = createCachedAdapterFactory(options);
+  const initializedOptions = { ...options, adapterFactory };
+  const xAdapter = adapterFactory('x', options.adapterOptions?.x);
+
+  try {
+    await xAdapter.init();
+    await xAdapter.updateApi?.();
+  } catch (error) {
+    process.stderr.write(
+      `Nimbipost gateway could not update X API endpoints: ${errorMessage(error)}\n`,
+    );
+  }
+
+  return initializedOptions;
+}
+
 interface JsonResponse {
   status: number;
   body: unknown;
 }
+
+class BadRequestError extends Error {}
 
 const PLATFORM_NAMES = new Set<PlatformName>([
   'x',
@@ -87,6 +108,20 @@ export async function handleGatewayRequest(
       return { status: 200, body: { platform, ...data } };
     }
 
+    if (parts.length === 5 && parts[2] === 'users' && parts[4] === 'friends') {
+      if (!adapter.getFriends) {
+        throw new UnsupportedOperationError(
+          `${platform} does not support friends timelines`,
+        );
+      }
+
+      const friendsOptions = friendsTimelineOptions(url.searchParams);
+      const username = decodeSegment(parts[3]);
+      const userId = await adapter.getUserId(username);
+      const data = await adapter.getFriends(userId, friendsOptions);
+      return { status: 200, body: { platform, ...data } };
+    }
+
     if (parts.length === 4 && parts[2] === 'posts') {
       const postId = decodeSegment(parts[3]);
       const data = await adapter.getPost(postId);
@@ -120,6 +155,25 @@ function createAdapter(
   return factory(platform, adapterOptions);
 }
 
+function createCachedAdapterFactory(
+  options: GatewayServerOptions,
+): GatewayAdapterFactory {
+  const cache = new Map<PlatformName, PlatformAdapter>();
+  const factory =
+    options.adapterFactory ?? (createPlatformAdapter as GatewayAdapterFactory);
+
+  return (platform, adapterOptions) => {
+    const cached = cache.get(platform);
+    if (cached) {
+      return cached;
+    }
+
+    const adapter = factory(platform, adapterOptions);
+    cache.set(platform, adapter);
+    return adapter;
+  };
+}
+
 function platformFromSegment(value: string): PlatformName | null {
   return PLATFORM_NAMES.has(value as PlatformName) ? (value as PlatformName) : null;
 }
@@ -137,6 +191,68 @@ function positiveIntParam(value: string | null): number | undefined {
   return Number.isInteger(parsed) && parsed > 0 ? parsed : undefined;
 }
 
+function friendsTimelineOptions(
+  searchParams: URLSearchParams,
+): {
+  follower?: boolean;
+  following?: boolean;
+  mutualFollower?: boolean;
+  total?: number;
+  endCursor?: string;
+  pagination?: boolean;
+} {
+  const follower = booleanParam(searchParams.get('follower'));
+  const following = booleanParam(searchParams.get('following'));
+  const mutualFollower = booleanParam(searchParams.get('mutualFollower'));
+  const selectedModes = [follower, following, mutualFollower].filter(Boolean);
+
+  if (selectedModes.length !== 1) {
+    throw new BadRequestError('Set exactly one friends timeline mode.');
+  }
+
+  const options: {
+    follower?: boolean;
+    following?: boolean;
+    mutualFollower?: boolean;
+    total?: number;
+    endCursor?: string;
+    pagination?: boolean;
+  } = {};
+
+  if (follower) {
+    options.follower = true;
+  }
+
+  if (following) {
+    options.following = true;
+  }
+
+  if (mutualFollower) {
+    options.mutualFollower = true;
+  }
+
+  const total = positiveIntParam(searchParams.get('total'));
+  if (total) {
+    options.total = total;
+  }
+
+  const cursor = searchParams.get('cursor')?.trim();
+  if (cursor) {
+    options.endCursor = cursor;
+  }
+
+  const pagination = searchParams.get('pagination');
+  if (pagination !== null) {
+    options.pagination = booleanParam(pagination);
+  }
+
+  return options;
+}
+
+function booleanParam(value: string | null): boolean {
+  return value === 'true' || value === '1';
+}
+
 function sendJson(response: ServerResponse, status: number, body: unknown): void {
   const json = JSON.stringify(body);
   response.writeHead(status, {
@@ -147,6 +263,10 @@ function sendJson(response: ServerResponse, status: number, body: unknown): void
 }
 
 function errorToResponse(error: unknown): JsonResponse {
+  if (error instanceof BadRequestError) {
+    return errorResponse(400, error.message);
+  }
+
   if (error instanceof UnsupportedOperationError) {
     return errorResponse(501, error.message);
   }
@@ -163,16 +283,25 @@ function errorResponse(status: number, message: string): JsonResponse {
 }
 
 if (isMainModule()) {
+  void startGateway();
+}
+
+async function startGateway(): Promise<void> {
   const config = loadGatewayConfig();
-  const server = createGatewayServer({
+  const options = await initializeGatewayOptions({
     adapterOptions: config.adapterOptions,
   });
+  const server = createGatewayServer(options);
 
   server.listen(config.port, config.host, () => {
     process.stdout.write(
       `Nimbipost gateway listening on http://${config.host}:${config.port}\n`,
     );
   });
+}
+
+function errorMessage(error: unknown): string {
+  return error instanceof Error ? error.message : String(error);
 }
 
 function isMainModule(): boolean {

@@ -28,7 +28,7 @@
   ],
   "scripts": {
     "build": "tsup",
-    "gateway": "npm run build && node dist/gateway/server.js",
+    "gateway": "npm run build && node --env-file=.env dist/gateway/server.js",
     "start:gateway": "node dist/gateway/server.js",
     "test": "vitest run",
     "lint": "tsc --noEmit"

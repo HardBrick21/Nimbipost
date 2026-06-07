@@ -76,7 +76,10 @@ describe('XApiUpdater', () => {
   });
 
   it('updates adapter endpoints from fetched home and bundle sources', async () => {
-    const requests: string[] = [];
+    const requests: Array<{
+      url: string;
+      headers?: Record<string, string | undefined>;
+    }> = [];
     const responses = [
       {
         text:
@@ -94,8 +97,11 @@ describe('XApiUpdater', () => {
     const adapter = new XAdapter({
       autoInit: false,
       requestClient: {
-        async request(url: string) {
-          requests.push(url);
+        async request(
+          url: string,
+          options?: { headers?: Record<string, string | undefined> },
+        ) {
+          requests.push({ url, headers: options?.headers });
           const response = responses.shift();
           if (!response) {
             throw new Error('No fake response configured');
@@ -108,10 +114,30 @@ describe('XApiUpdater', () => {
 
     const mapped = await adapter.updateApi();
 
-    expect(requests).toEqual([
+    expect(requests.map((request) => request.url)).toEqual([
       'https://x.com/',
       'https://abs.twimg.com/responsive-web/client-web/api.abc123a.js',
       'https://abs.twimg.com/responsive-web/client-web/main.def456.js',
+    ]);
+    expect(requests.map((request) => request.headers)).toEqual([
+      {
+        Authorization: undefined,
+        'X-Csrf-Token': undefined,
+        'X-Guest-Token': undefined,
+        'X-Twitter-Auth-Type': undefined,
+      },
+      {
+        Authorization: undefined,
+        'X-Csrf-Token': undefined,
+        'X-Guest-Token': undefined,
+        'X-Twitter-Auth-Type': undefined,
+      },
+      {
+        Authorization: undefined,
+        'X-Csrf-Token': undefined,
+        'X-Guest-Token': undefined,
+        'X-Twitter-Auth-Type': undefined,
+      },
     ]);
     expect(mapped).toMatchObject({
       USER_DATA_ENDPOINT: 'new-user/UserByScreenName',

@@ -1,7 +1,7 @@
 export const X_PATHS = {
   DOMAIN: 'x.com',
   BASE_URL: 'https://x.com/',
-  API_URL: 'https://api.x.com/graphql/',
+  API_URL: 'https://x.com/i/api/graphql/',
   TWITTER_CDN: 'https://abs.twimg.com/responsive-web/client-web',
   TASK_URL: 'https://api.x.com/1.1/onboarding/task.json',
   JAVSCRIPT_INSTRUMENTATION_URL: 'https://twitter.com/i/js_inst',

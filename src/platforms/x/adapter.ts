@@ -431,6 +431,8 @@ export class XAdapter implements PlatformAdapter {
       throw new Error('Set exactly one friends timeline mode.');
     }
 
+    await this.requireAuthenticatedSession('friends timelines');
+
     const endpoint = options.follower
       ? X_PATHS.FOLLOWERS_ENDPOINT
       : options.following
@@ -606,7 +608,15 @@ export class XAdapter implements PlatformAdapter {
 
   private async fetchApiUpdateSources(updater: XApiUpdater): Promise<string[]> {
     const requestClient = await this.getRequestClient();
-    const homePage = await requestClient.request(X_PATHS.BASE_URL);
+    const updateHeaders = {
+      Authorization: undefined,
+      'X-Csrf-Token': undefined,
+      'X-Guest-Token': undefined,
+      'X-Twitter-Auth-Type': undefined,
+    };
+    const homePage = await requestClient.request(X_PATHS.BASE_URL, {
+      headers: updateHeaders,
+    });
     const homePageSource = String(homePage.text ?? '');
     const sources = [homePageSource];
     const apiFileUrl = updater.getApiFileUrl(homePageSource);
@@ -617,7 +627,9 @@ export class XAdapter implements PlatformAdapter {
         continue;
       }
 
-      const response = await requestClient.request(fileUrl);
+      const response = await requestClient.request(fileUrl, {
+        headers: updateHeaders,
+      });
       sources.push(String(response.text ?? ''));
     }
 
@@ -699,6 +711,14 @@ export class XAdapter implements PlatformAdapter {
     }
 
     return this.requestClient;
+  }
+
+  private async requireAuthenticatedSession(scope: string): Promise<void> {
+    const requestClient = await this.getRequestClient();
+
+    if (!requestClient.getSessionSnapshot?.().cookies.auth_token) {
+      throw new Error(`X auth token is required for ${scope}.`);
+    }
   }
 }
 

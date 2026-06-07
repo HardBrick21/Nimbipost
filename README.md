@@ -165,6 +165,9 @@ NIMBIPOST_PORT=4334 npm run start:gateway
 ```
 
 For local development, `npm run gateway` builds the package and starts the gateway in one command.
+When the Gateway starts, it attempts to refresh X/Twitter GraphQL endpoint
+metadata from the current X web bundle. If the refresh fails, the Gateway logs
+the error and continues with the bundled endpoint metadata.
 
 Available endpoints:
 
@@ -172,6 +175,7 @@ Available endpoints:
 GET /health
 GET /v1/:platform/users/:username
 GET /v1/:platform/users/:username/posts?total=20
+GET /v1/:platform/users/:username/friends?following=true
 GET /v1/:platform/posts/:postId
 GET /v1/:platform/search?q=BTC
 ```
@@ -180,6 +184,7 @@ Example:
 
 ```bash
 curl "http://localhost:4334/v1/x/users/elonmusk/posts?total=20"
+curl "http://localhost:4334/v1/x/users/barton6026/friends?following=true&pagination=false"
 ```
 
 Authenticated X/Twitter Gateway usage:

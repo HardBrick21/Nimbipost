@@ -1,7 +1,10 @@
 import { describe, expect, it } from 'vitest';
 import { XAdapter } from '../../src/platforms/x/adapter';
 
-function createAdapter(responses: Array<Record<string, unknown>>) {
+function createAdapter(
+  responses: Array<Record<string, unknown>>,
+  options: { authToken?: string } = {},
+) {
   const requests: Array<{ url: string; params?: Record<string, string> }> = [];
   const adapter = new XAdapter({
     autoInit: false,
@@ -15,6 +18,9 @@ function createAdapter(responses: Array<Record<string, unknown>>) {
 
         return response;
       },
+      getSessionSnapshot: options.authToken
+        ? () => ({ headers: {}, cookies: { auth_token: options.authToken ?? '' } })
+        : undefined,
     },
   });
 
@@ -143,6 +149,55 @@ describe('XAdapter', () => {
     await expect(adapter.getFriends('44196397')).rejects.toThrow(
       'Set exactly one friends timeline mode.',
     );
+  });
+
+  it('requires an authenticated session for friends timelines', async () => {
+    const { adapter } = createAdapter([]);
+
+    await expect(
+      adapter.getFriends('44196397', { following: true }),
+    ).rejects.toThrow('X auth token is required for friends timelines.');
+  });
+
+  it('uses the following timeline path for authenticated friends requests', async () => {
+    const { adapter, requests } = createAdapter(
+      [
+        {
+          data: {
+            user: {
+              result: {
+                timeline: {
+                  timeline: {
+                    instructions: [
+                      {
+                        type: 'TimelineAddEntries',
+                        entries: [
+                          {
+                            entryId: 'user-1',
+                            content: { itemContent: { id: 'u1' } },
+                          },
+                        ],
+                      },
+                    ],
+                  },
+                },
+              },
+            },
+          },
+        },
+      ],
+      { authToken: 'auth-token' },
+    );
+
+    const page = await adapter.getFriends('44196397', {
+      following: true,
+      pagination: false,
+    });
+
+    expect(page.data).toEqual([
+      { entryId: 'user-1', content: { itemContent: { id: 'u1' } } },
+    ]);
+    expect(requests[0].url).toContain('/Following');
   });
 
   it('uses the favoriters timeline path for tweet likes', async () => {

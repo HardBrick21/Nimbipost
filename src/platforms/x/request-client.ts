@@ -29,7 +29,7 @@ export type Transport = (
 
 export interface XRequestOptions {
   method?: string;
-  headers?: Record<string, string>;
+  headers?: Record<string, string | undefined>;
   params?: Record<string, string>;
   json?: unknown;
   body?: BodyInit | null;
@@ -86,10 +86,10 @@ export class XRequestClient {
     options: XRequestOptions = {},
   ): Promise<Record<string, unknown>> {
     const method = (options.method ?? 'GET').toUpperCase();
-    const headers = {
+    const headers = removeUndefinedValues({
       ...this.baseHeaders,
       ...(options.headers ?? {}),
-    };
+    });
     const cookieHeader = serializeCookies(this.cookies);
 
     if (cookieHeader) {
@@ -144,6 +144,14 @@ function serializeCookies(cookies: Record<string, string>): string {
   return Object.entries(cookies)
     .map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(value)}`)
     .join('; ');
+}
+
+function removeUndefinedValues(
+  source: Record<string, string | undefined>,
+): Record<string, string> {
+  return Object.fromEntries(
+    Object.entries(source).filter(([, value]) => value !== undefined),
+  ) as Record<string, string>;
 }
 
 function checkForErrors(

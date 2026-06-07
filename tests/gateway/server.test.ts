@@ -1,6 +1,9 @@
+import { vi } from 'vitest';
 import {
   handleGatewayRequest,
+  initializeGatewayOptions,
   type GatewayAdapterFactory,
+  type GatewayServerOptions,
 } from '../../src/gateway/server';
 import type { PlatformAdapter, PlatformName } from '../../src/core/platform-adapter';
 
@@ -21,6 +24,51 @@ describe('gateway server', () => {
 
     expect(response.status).toBe(200);
     expect(response.body).toEqual({ status: 'ok' });
+  });
+
+  it('initializes and updates the X adapter for gateway startup', async () => {
+    const options = await initializeGatewayOptions({ adapterFactory: factory });
+
+    expect(calls).toContainEqual({ method: 'factory', args: ['x', undefined] });
+    expect(calls).toContainEqual({ method: 'init', args: [] });
+    expect(calls).toContainEqual({ method: 'updateApi', args: [] });
+
+    calls.length = 0;
+    const first = await get('/v1/x/users/elonmusk', options);
+    const second = await get('/v1/x/users/jack', options);
+
+    expect(first.status).toBe(200);
+    expect(second.status).toBe(200);
+    expect(calls.filter((call) => call.method === 'factory')).toHaveLength(0);
+    expect(calls).toContainEqual({
+      method: 'getUserData',
+      args: ['elonmusk'],
+    });
+    expect(calls).toContainEqual({
+      method: 'getUserData',
+      args: ['jack'],
+    });
+  });
+
+  it('keeps gateway startup available when the X API update fails', async () => {
+    const stderrWrite = vi
+      .spyOn(process.stderr, 'write')
+      .mockImplementation(() => true);
+    const options = await initializeGatewayOptions({
+      adapterFactory(platform) {
+        calls.push({ method: 'factory', args: [platform, undefined] });
+        return fakeAdapter(platform, { updateApiError: new Error('update failed') });
+      },
+    });
+
+    const response = await get('/v1/x/users/elonmusk', options);
+
+    expect(response.status).toBe(200);
+    expect(calls).toContainEqual({ method: 'updateApi', args: [] });
+    expect(stderrWrite).toHaveBeenCalledWith(
+      'Nimbipost gateway could not update X API endpoints: update failed\n',
+    );
+    stderrWrite.mockRestore();
   });
 
   it('returns user data for a platform username', async () => {
@@ -84,6 +132,66 @@ describe('gateway server', () => {
     });
   });
 
+  it('returns following users for a platform username', async () => {
+    const response = await get(
+      '/v1/x/users/barton6026/friends?following=true&pagination=false',
+    );
+
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual({
+      platform: 'x',
+      data: [
+        {
+          content: {
+            itemContent: {
+              user_results: {
+                result: {
+                  legacy: {
+                    screen_name: 'alice',
+                  },
+                },
+              },
+            },
+          },
+        },
+      ],
+      cursor_endpoint: 'next-cursor',
+      has_next_page: true,
+    });
+    expect(calls).toContainEqual({
+      method: 'getUserId',
+      args: ['barton6026'],
+    });
+    expect(calls).toContainEqual({
+      method: 'getFriends',
+      args: ['user-barton6026', { following: true, pagination: false }],
+    });
+  });
+
+  it('passes friends cursors and totals through to the adapter', async () => {
+    const response = await get(
+      '/v1/x/users/barton6026/friends?following=true&cursor=abc123&total=10',
+    );
+
+    expect(response.status).toBe(200);
+    expect(calls).toContainEqual({
+      method: 'getFriends',
+      args: [
+        'user-barton6026',
+        { following: true, total: 10, endCursor: 'abc123' },
+      ],
+    });
+  });
+
+  it('requires exactly one friends mode', async () => {
+    const response = await get('/v1/x/users/barton6026/friends');
+
+    expect(response.status).toBe(400);
+    expect(response.body).toEqual({
+      error: 'Set exactly one friends timeline mode.',
+    });
+  });
+
   it('returns 400 when search query is missing', async () => {
     const response = await get('/v1/x/search');
 
@@ -98,10 +206,13 @@ describe('gateway server', () => {
     expect(response.body).toEqual({ error: 'Route not found' });
   });
 
-  async function get(path: string): Promise<{ status: number; body: unknown }> {
+  async function get(
+    path: string,
+    options: GatewayServerOptions = { adapterFactory: factory },
+  ): Promise<{ status: number; body: unknown }> {
     const response = await handleGatewayRequest(
       { method: 'GET', url: path } as never,
-      { adapterFactory: factory },
+      options,
     );
 
     return {
@@ -110,11 +221,23 @@ describe('gateway server', () => {
     };
   }
 
-  function fakeAdapter(platform: PlatformName): PlatformAdapter {
+  function fakeAdapter(
+    platform: PlatformName,
+    options: { updateApiError?: Error } = {},
+  ): PlatformAdapter {
     return {
       platform,
       async init() {
         calls.push({ method: 'init', args: [] });
+      },
+      async updateApi() {
+        calls.push({ method: 'updateApi', args: [] });
+
+        if (options.updateApiError) {
+          throw options.updateApiError;
+        }
+
+        return { USER_DATA_ENDPOINT: 'new/UserByScreenName' };
       },
       async getUserId(username) {
         calls.push({ method: 'getUserId', args: [username] });
@@ -146,6 +269,28 @@ describe('gateway server', () => {
           data: [{ id: `search-${query}` }],
           cursor_endpoint: null,
           has_next_page: false,
+        };
+      },
+      async getFriends(userId, options) {
+        calls.push({ method: 'getFriends', args: [userId, options] });
+        return {
+          data: [
+            {
+              content: {
+                itemContent: {
+                  user_results: {
+                    result: {
+                      legacy: {
+                        screen_name: 'alice',
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          ],
+          cursor_endpoint: 'next-cursor',
+          has_next_page: true,
         };
       },
     };
