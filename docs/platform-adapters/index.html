@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Platform Adapters - Nimbipost TypeScript SDK</title>
+    <meta
+      name="description"
+      content="Review the Nimbipost platform adapters for X/Twitter, Bluesky, Mastodon, Reddit, YouTube, TikTok, Telegram, Threads, and Instagram."
+    />
+    <meta name="robots" content="index, follow" />
+    <meta name="author" content="HardBrick21" />
+    <meta name="theme-color" content="#0f766e" />
+    <link rel="canonical" href="https://hardbrick21.github.io/Nimbipost/platform-adapters/" />
+    <meta property="og:title" content="Platform Adapters - Nimbipost TypeScript SDK" />
+    <meta
+      property="og:description"
+      content="Supported social platform adapters and credential scopes for the Nimbipost TypeScript SDK."
+    />
+    <meta property="og:type" content="article" />
+    <meta property="og:url" content="https://hardbrick21.github.io/Nimbipost/platform-adapters/" />
+    <meta property="og:site_name" content="Nimbipost" />
+    <meta property="og:image" content="https://hardbrick21.github.io/Nimbipost/assets/logo.svg" />
+    <meta property="og:image:alt" content="Nimbipost wordmark with layered adapter blocks" />
+    <meta property="og:locale" content="en_US" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Platform Adapters - Nimbipost TypeScript SDK" />
+    <meta
+      name="twitter:description"
+      content="Supported social platform adapters and credential scopes for the Nimbipost TypeScript SDK."
+    />
+    <meta name="twitter:image" content="https://hardbrick21.github.io/Nimbipost/assets/logo.svg" />
+    <link rel="icon" href="../assets/mark.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="../styles.css" />
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "TechArticle",
+        "headline": "Nimbipost platform adapters",
+        "url": "https://hardbrick21.github.io/Nimbipost/platform-adapters/",
+        "description": "Supported social platform adapters and credential scopes for the Nimbipost TypeScript SDK.",
+        "about": ["TypeScript", "Social media API", "SDK", "Platform adapter"]
+      }
+    </script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <header class="site-header">
+      <nav class="nav" aria-label="Primary navigation">
+        <a class="brand" href="../" aria-label="Nimbipost home">
+          <img class="brand-mark" src="../assets/mark.svg" alt="" width="40" height="40" />
+          <span>Nimbipost</span>
+        </a>
+        <div class="nav-links">
+          <a href="../platform-adapters/">Platforms</a>
+          <a href="../#adapter">Adapter</a>
+          <a href="../http-gateway/">Gateway</a>
+          <a href="../x-twitter-adapter/">X/Twitter</a>
+          <a class="button" href="https://github.com/HardBrick21/Nimbipost">GitHub</a>
+        </div>
+      </nav>
+    </header>
+
+    <main id="main">
+      <section class="page-hero">
+        <div class="page-hero-inner">
+          <p class="eyebrow">Supported platforms</p>
+          <h1>Platform adapters for shared social API workflows.</h1>
+          <p>
+            Nimbipost keeps application code on a stable user, post, search, and pagination contract while each
+            adapter owns the platform-specific endpoint, credential, and response-shape work.
+          </p>
+          <div class="hero-actions" aria-label="Page actions">
+            <a class="button primary" href="../x-twitter-adapter/">Open X/Twitter adapter</a>
+            <a class="button" href="../http-gateway/">Use the HTTP Gateway</a>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="container">
+          <div class="section-heading">
+            <h2>Adapter index.</h2>
+            <p>These links give crawlers and readers stable entry points for each supported platform.</p>
+          </div>
+          <div class="link-grid">
+            <a class="tile text-link" href="../x-twitter-adapter/">X/Twitter adapter</a>
+            <a class="tile text-link" href="#bluesky">Bluesky adapter</a>
+            <a class="tile text-link" href="#mastodon">Mastodon adapter</a>
+            <a class="tile text-link" href="#reddit">Reddit adapter</a>
+            <a class="tile text-link" href="#youtube">YouTube adapter</a>
+            <a class="tile text-link" href="#tiktok">TikTok adapter</a>
+            <a class="tile text-link" href="#telegram">Telegram adapter</a>
+            <a class="tile text-link" href="#threads">Threads adapter</a>
+            <a class="tile text-link" href="#instagram">Instagram adapter</a>
+          </div>
+        </div>
+      </section>
+
+      <section class="section alt">
+        <div class="container">
+          <div class="section-heading">
+            <h2>Adapter details.</h2>
+            <p>Use these summaries to choose credentials and understand what each adapter normalizes.</p>
+          </div>
+          <div class="article-grid">
+            <article class="tile article-card" id="bluesky">
+              <h2>Bluesky adapter</h2>
+              <p>AT Protocol public API reads for profiles, author feeds, post lookup, and search.</p>
+              <ul>
+                <li>Factory name: <code>bluesky</code></li>
+                <li>Credential model: optional access token for authenticated API calls.</li>
+                <li>Best fit: public profile and post discovery workflows.</li>
+              </ul>
+            </article>
+            <article class="tile article-card" id="mastodon">
+              <h2>Mastodon adapter</h2>
+              <p>Instance-scoped REST API adapter for accounts, statuses, and search.</p>
+              <ul>
+                <li>Factory name: <code>mastodon</code></li>
+                <li>Credential model: instance URL with optional access token.</li>
+                <li>Best fit: federated social reads where the target instance is known.</li>
+              </ul>
+            </article>
+            <article class="tile article-card" id="reddit">
+              <h2>Reddit adapter</h2>
+              <p>OAuth API reads for users, submissions, post lookup, and search.</p>
+              <ul>
+                <li>Factory name: <code>reddit</code></li>
+                <li>Credential model: Reddit OAuth access token.</li>
+                <li>Best fit: user submission and search integrations.</li>
+              </ul>
+            </article>
+            <article class="tile article-card" id="youtube">
+              <h2>YouTube adapter</h2>
+              <p>YouTube Data API reads for channels, videos, and search results.</p>
+              <ul>
+                <li>Factory name: <code>youtube</code></li>
+                <li>Credential model: API key or bearer token.</li>
+                <li>Best fit: video and channel metadata retrieval.</li>
+              </ul>
+            </article>
+            <article class="tile article-card" id="tiktok">
+              <h2>TikTok adapter</h2>
+              <p>Display API reads for authenticated user profile and video-list access.</p>
+              <ul>
+                <li>Factory name: <code>tiktok</code></li>
+                <li>Credential model: approved Display API access token.</li>
+                <li>Best fit: user-owned profile and media workflows.</li>
+              </ul>
+            </article>
+            <article class="tile article-card" id="telegram">
+              <h2>Telegram adapter</h2>
+              <p>Bot API reads for bot identity and update-backed message workflows.</p>
+              <ul>
+                <li>Factory name: <code>telegram</code></li>
+                <li>Credential model: Telegram bot token.</li>
+                <li>Best fit: bot-managed update ingestion.</li>
+              </ul>
+            </article>
+            <article class="tile article-card" id="threads">
+              <h2>Threads adapter</h2>
+              <p>Graph API reads for Threads profile and thread data.</p>
+              <ul>
+                <li>Factory name: <code>threads</code></li>
+                <li>Credential model: access token and user id.</li>
+                <li>Best fit: Threads Graph API integrations with approved access.</li>
+              </ul>
+            </article>
+            <article class="tile article-card" id="instagram">
+              <h2>Instagram adapter</h2>
+              <p>Graph API reads for Instagram profile and media data.</p>
+              <ul>
+                <li>Factory name: <code>instagram</code></li>
+                <li>Credential model: access token and user id.</li>
+                <li>Best fit: creator and business media reads through Graph API permissions.</li>
+              </ul>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="cta" aria-labelledby="platform-cta-title">
+        <div class="cta-inner">
+          <div>
+            <h2 id="platform-cta-title">Need Node-neutral access?</h2>
+            <p>
+              Run the same adapter layer behind the Nimbipost HTTP Gateway so non-Node services can call the SDK
+              through stable REST routes.
+            </p>
+          </div>
+          <a class="button" href="../http-gateway/">Open Gateway guide</a>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="footer-inner">
+        <span>Nimbipost</span>
+        <div class="footer-links" aria-label="Footer navigation">
+          <a href="../platform-adapters/">Supported platforms</a>
+          <a href="../http-gateway/">Documentation</a>
+          <a href="https://github.com/HardBrick21/Nimbipost">GitHub repository</a>
+          <a href="../">Home</a>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>

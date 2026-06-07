@@ -34,6 +34,11 @@ a {
   color: inherit;
 }
 
+a:not(.button):not(.brand):not(.text-link) {
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+}
+
 .skip-link {
   position: absolute;
   left: 16px;
@@ -135,6 +140,27 @@ a {
 .hero {
   background: #ffffff;
   border-bottom: 1px solid var(--line);
+}
+
+.page-hero {
+  padding: 74px 0 64px;
+  border-bottom: 1px solid var(--line);
+  background: #ffffff;
+}
+
+.page-hero-inner {
+  width: min(960px, calc(100% - 32px));
+  margin: 0 auto;
+}
+
+.page-hero h1 {
+  margin-bottom: 18px;
+}
+
+.page-hero p {
+  max-width: 760px;
+  color: var(--muted);
+  font-size: 1.12rem;
 }
 
 .hero-inner {
@@ -294,6 +320,63 @@ h1 {
 .status-list {
   margin-bottom: 0;
   color: var(--muted);
+}
+
+.tile .text-link {
+  margin-top: 16px;
+}
+
+.text-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 32px;
+  color: var(--blue-dark);
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.text-link:hover,
+.text-link:focus {
+  color: var(--ink);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.link-grid,
+.article-grid {
+  display: grid;
+  gap: 14px;
+}
+
+.link-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.article-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.article-card {
+  min-height: 220px;
+  scroll-margin-top: 92px;
+}
+
+.article-card h2 {
+  margin-bottom: 8px;
+  font-size: 1.35rem;
+  line-height: 1.2;
+}
+
+.article-card ul,
+.detail-list {
+  margin: 16px 0 0;
+  padding-left: 18px;
+  color: var(--muted);
+}
+
+.article-card li + li,
+.detail-list li + li {
+  margin-top: 8px;
 }
 
 .platform-name {
@@ -459,10 +542,25 @@ code {
   font-size: 0.94rem;
 }
 
-.footer-inner a {
+.footer-links {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 16px;
+}
+
+.footer-inner a,
+.footer-links a {
   color: #ffffff;
   text-decoration: none;
   font-weight: 750;
+}
+
+.footer-inner a:hover,
+.footer-inner a:focus {
+  text-decoration: underline;
+  text-underline-offset: 3px;
 }
 
 :focus-visible {
@@ -494,7 +592,9 @@ code {
 
   .platform-grid,
   .feature-grid,
-  .status-grid {
+  .status-grid,
+  .link-grid,
+  .article-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
@@ -510,7 +610,8 @@ code {
   }
 
   .hero-actions,
-  .footer-inner {
+  .footer-inner,
+  .footer-links {
     align-items: stretch;
     flex-direction: column;
   }
@@ -521,7 +622,9 @@ code {
 
   .platform-grid,
   .feature-grid,
-  .status-grid {
+  .status-grid,
+  .link-grid,
+  .article-grid {
     grid-template-columns: 1fr;
   }
 

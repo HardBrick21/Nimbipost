@@ -3,16 +3,59 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Nimbipost - Social Platform Adapter SDK</title>
+    <title>Nimbipost - TypeScript Social Platform Adapter SDK</title>
     <meta
       name="description"
-      content="Nimbipost is a TypeScript SDK that exposes one adapter layer for X/Twitter, Bluesky, Mastodon, Reddit, YouTube, TikTok, Telegram, Threads, and Instagram."
+      content="Nimbipost is a TypeScript SDK and HTTP Gateway that gives apps one adapter API for X/Twitter, Bluesky, Mastodon, Reddit, YouTube, TikTok, Telegram, Threads, and Instagram."
     />
-    <meta property="og:title" content="Nimbipost" />
-    <meta property="og:description" content="One adapter layer for social platform APIs." />
+    <meta name="robots" content="index, follow" />
+    <meta name="author" content="HardBrick21" />
+    <meta name="theme-color" content="#0f766e" />
+    <link rel="canonical" href="https://hardbrick21.github.io/Nimbipost/" />
+    <meta property="og:title" content="Nimbipost - TypeScript Social Platform Adapter SDK" />
+    <meta
+      property="og:description"
+      content="Use one TypeScript adapter API for X/Twitter, Bluesky, Mastodon, Reddit, YouTube, TikTok, Telegram, Threads, and Instagram."
+    />
     <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://hardbrick21.github.io/Nimbipost/" />
+    <meta property="og:site_name" content="Nimbipost" />
+    <meta property="og:image" content="https://hardbrick21.github.io/Nimbipost/assets/logo.svg" />
+    <meta property="og:image:alt" content="Nimbipost wordmark with layered adapter blocks" />
+    <meta property="og:locale" content="en_US" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Nimbipost - TypeScript Social Platform Adapter SDK" />
+    <meta
+      name="twitter:description"
+      content="Use one TypeScript adapter API for X/Twitter, Bluesky, Mastodon, Reddit, YouTube, TikTok, Telegram, Threads, and Instagram."
+    />
+    <meta name="twitter:image" content="https://hardbrick21.github.io/Nimbipost/assets/logo.svg" />
     <link rel="icon" href="assets/mark.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="styles.css" />
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "WebSite",
+            "name": "Nimbipost",
+            "url": "https://hardbrick21.github.io/Nimbipost/",
+            "description": "Nimbipost is a TypeScript SDK and HTTP Gateway for integrating social platform APIs through one adapter layer."
+          },
+          {
+            "@type": "SoftwareSourceCode",
+            "name": "Nimbipost",
+            "url": "https://hardbrick21.github.io/Nimbipost/",
+            "codeRepository": "https://github.com/HardBrick21/Nimbipost",
+            "programmingLanguage": "TypeScript",
+            "runtimePlatform": "Node.js",
+            "applicationCategory": "DeveloperApplication",
+            "license": "https://opensource.org/licenses/MIT",
+            "description": "A TypeScript SDK with shared user, post, search, and pagination contracts for social platform integrations."
+          }
+        ]
+      }
+    </script>
   </head>
   <body>
     <a class="skip-link" href="#main">Skip to content</a>
@@ -23,9 +66,9 @@
           <span>Nimbipost</span>
         </a>
         <div class="nav-links">
-          <a href="#platforms">Platforms</a>
+          <a href="platform-adapters/">Platforms</a>
           <a href="#adapter">Adapter</a>
-          <a href="#gateway">Gateway</a>
+          <a href="http-gateway/">Gateway</a>
           <a href="#architecture">Architecture</a>
           <a href="#status">Status</a>
           <a class="button" href="#status">Project status</a>
@@ -44,8 +87,8 @@
               each platform's authentication, request signing, and API details behind dedicated adapters.
             </p>
             <div class="hero-actions" aria-label="Primary actions">
-              <a class="button primary" href="#adapter">View adapter model</a>
-              <a class="button" href="#platforms">Explore platforms</a>
+              <a class="button primary" href="platform-adapters/">Explore platform adapters</a>
+              <a class="button" href="http-gateway/">View HTTP Gateway</a>
             </div>
             <div class="hero-meta" aria-label="Project highlights">
               <span>9 platform adapters</span>
@@ -77,38 +120,47 @@
             <article class="tile">
               <div class="platform-name"><strong>X/Twitter</strong><span class="tag">Primary</span></div>
               <p>GraphQL reads, guest sessions, login flow, session storage, pagination, and transaction ids.</p>
+              <a class="text-link" href="x-twitter-adapter/">Read X adapter details</a>
             </article>
             <article class="tile">
               <div class="platform-name"><strong>Bluesky</strong><span class="tag neutral">AT Protocol</span></div>
               <p>Public API adapter for profiles, author feeds, post lookup, and search.</p>
+              <a class="text-link" href="platform-adapters/#bluesky">Read Bluesky adapter details</a>
             </article>
             <article class="tile">
               <div class="platform-name"><strong>Mastodon</strong><span class="tag neutral">REST</span></div>
               <p>Instance-scoped account, status, and search operations.</p>
+              <a class="text-link" href="platform-adapters/#mastodon">Read Mastodon adapter details</a>
             </article>
             <article class="tile">
               <div class="platform-name"><strong>Reddit</strong><span class="tag neutral">OAuth</span></div>
               <p>User submissions, post lookup, and search through OAuth API endpoints.</p>
+              <a class="text-link" href="platform-adapters/#reddit">Read Reddit adapter details</a>
             </article>
             <article class="tile">
               <div class="platform-name"><strong>YouTube</strong><span class="tag neutral">Data API</span></div>
               <p>Channel, video, and search reads with API-key or bearer-token configuration.</p>
+              <a class="text-link" href="platform-adapters/#youtube">Read YouTube adapter details</a>
             </article>
             <article class="tile">
               <div class="platform-name"><strong>TikTok</strong><span class="tag neutral">Display API</span></div>
               <p>Authenticated user and video-list reads for approved Display API apps.</p>
+              <a class="text-link" href="platform-adapters/#tiktok">Read TikTok adapter details</a>
             </article>
             <article class="tile">
               <div class="platform-name"><strong>Telegram</strong><span class="tag neutral">Bot API</span></div>
               <p>Bot identity and update-backed reads through bot-token credentials.</p>
+              <a class="text-link" href="platform-adapters/#telegram">Read Telegram adapter details</a>
             </article>
             <article class="tile">
               <div class="platform-name"><strong>Threads</strong><span class="tag neutral">Graph</span></div>
               <p>Graph API profile and thread reads with access token and user id.</p>
+              <a class="text-link" href="platform-adapters/#threads">Read Threads adapter details</a>
             </article>
             <article class="tile">
               <div class="platform-name"><strong>Instagram</strong><span class="tag neutral">Graph</span></div>
               <p>Graph API profile and media reads with access token and user id.</p>
+              <a class="text-link" href="platform-adapters/#instagram">Read Instagram adapter details</a>
             </article>
           </div>
         </div>
@@ -120,7 +172,8 @@
             <h2>A compact contract for common social workflows.</h2>
             <p>
               The public shape favors generic post terminology, with X/Twitter aliases retained where existing
-              integrations need them.
+              integrations need them. See the full <a href="platform-adapters/">platform adapter documentation</a>
+              for credential and scope details.
             </p>
           </div>
           <div class="code-panel" aria-label="TypeScript adapter usage example">
@@ -155,7 +208,8 @@
             <h2>Run the SDK as a standalone HTTP Gateway.</h2>
             <p>
               Non-Node services can call Nimbipost over HTTP while the Gateway keeps platform credentials,
-              sessions, request signing, and pagination inside the Node process.
+              sessions, request signing, and pagination inside the Node process. The
+              <a href="http-gateway/">HTTP Gateway guide</a> covers routes and deployment shape.
             </p>
           </div>
           <div class="code-panel" aria-label="HTTP Gateway usage example">
@@ -216,7 +270,8 @@ GET /v1/:platform/search?q=BTC</code></pre>
             <p>
               `createPlatformAdapter` returns the same public interface for each supported platform. The adapter
               owns service URLs, credentials, request transport, pagination handling, and platform-specific
-              fallbacks.
+              fallbacks. For X/Twitter-specific session handling, open the
+              <a href="x-twitter-adapter/">X/Twitter adapter page</a>.
             </p>
           </div>
           <div class="steps">
@@ -284,7 +339,9 @@ GET /v1/:platform/search?q=BTC</code></pre>
             <h2 id="cta-title">Deploy as a static GitHub Pages site.</h2>
             <p>
               This page is plain HTML, CSS, and SVG under `docs/`. Configure GitHub Pages to publish the
-              repository's `/docs` folder and it can be served without a build pipeline.
+              repository's `/docs` folder and it can be served without a build pipeline. Browse the
+              <a href="platform-adapters/">supported platform adapters</a> or the
+              <a href="http-gateway/">HTTP Gateway documentation</a>.
             </p>
           </div>
           <a class="button" href="#top">Back to top</a>
@@ -295,7 +352,12 @@ GET /v1/:platform/search?q=BTC</code></pre>
     <footer class="site-footer">
       <div class="footer-inner">
         <span>Nimbipost</span>
-        <a href="#top">Back to top</a>
+        <div class="footer-links" aria-label="Footer navigation">
+          <a href="platform-adapters/">Supported platforms</a>
+          <a href="http-gateway/">Documentation</a>
+          <a href="https://github.com/HardBrick21/Nimbipost">GitHub repository</a>
+          <a href="#top">Back to top</a>
+        </div>
       </div>
     </footer>
   </body>

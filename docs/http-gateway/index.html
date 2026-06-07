@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>HTTP Gateway - Nimbipost Documentation</title>
+    <meta
+      name="description"
+      content="Run Nimbipost as a standalone Node HTTP Gateway for social platform API access from non-Node backends and services."
+    />
+    <meta name="robots" content="index, follow" />
+    <meta name="author" content="HardBrick21" />
+    <meta name="theme-color" content="#0f766e" />
+    <link rel="canonical" href="https://hardbrick21.github.io/Nimbipost/http-gateway/" />
+    <meta property="og:title" content="HTTP Gateway - Nimbipost Documentation" />
+    <meta
+      property="og:description"
+      content="Expose Nimbipost platform adapters over stable HTTP routes for backend services."
+    />
+    <meta property="og:type" content="article" />
+    <meta property="og:url" content="https://hardbrick21.github.io/Nimbipost/http-gateway/" />
+    <meta property="og:site_name" content="Nimbipost" />
+    <meta property="og:image" content="https://hardbrick21.github.io/Nimbipost/assets/logo.svg" />
+    <meta property="og:image:alt" content="Nimbipost wordmark with layered adapter blocks" />
+    <meta property="og:locale" content="en_US" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="HTTP Gateway - Nimbipost Documentation" />
+    <meta
+      name="twitter:description"
+      content="Expose Nimbipost platform adapters over stable HTTP routes for backend services."
+    />
+    <meta name="twitter:image" content="https://hardbrick21.github.io/Nimbipost/assets/logo.svg" />
+    <link rel="icon" href="../assets/mark.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="../styles.css" />
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "TechArticle",
+        "headline": "Nimbipost HTTP Gateway",
+        "url": "https://hardbrick21.github.io/Nimbipost/http-gateway/",
+        "description": "Run Nimbipost as a standalone Node HTTP Gateway for social platform API access.",
+        "about": ["HTTP API", "Node.js", "TypeScript SDK", "Social media API"]
+      }
+    </script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <header class="site-header">
+      <nav class="nav" aria-label="Primary navigation">
+        <a class="brand" href="../" aria-label="Nimbipost home">
+          <img class="brand-mark" src="../assets/mark.svg" alt="" width="40" height="40" />
+          <span>Nimbipost</span>
+        </a>
+        <div class="nav-links">
+          <a href="../platform-adapters/">Platforms</a>
+          <a href="../#adapter">Adapter</a>
+          <a href="../http-gateway/">Gateway</a>
+          <a href="../x-twitter-adapter/">X/Twitter</a>
+          <a class="button" href="https://github.com/HardBrick21/Nimbipost">GitHub</a>
+        </div>
+      </nav>
+    </header>
+
+    <main id="main">
+      <section class="page-hero">
+        <div class="page-hero-inner">
+          <p class="eyebrow">HTTP Gateway</p>
+          <h1>Use Nimbipost from services that do not run TypeScript directly.</h1>
+          <p>
+            The Gateway keeps platform credentials, session bootstrap, request signing, and pagination inside a
+            Node process while other backends call stable HTTP routes.
+          </p>
+          <div class="hero-actions" aria-label="Page actions">
+            <a class="button primary" href="#routes">View Gateway routes</a>
+            <a class="button" href="../platform-adapters/">Browse adapters</a>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="container">
+          <div class="section-heading">
+            <h2>Gateway workflow.</h2>
+            <p>Build once, start the Gateway, then call platform-neutral routes from any backend.</p>
+          </div>
+          <div class="code-panel" aria-label="HTTP Gateway start command">
+            <div class="code-title">
+              <span>gateway</span>
+              <span>Shell</span>
+            </div>
+            <pre><code>npm run build
+X_AUTH_TOKEN=your_auth_token NIMBIPOST_PORT=4334 npm run start:gateway</code></pre>
+          </div>
+        </div>
+      </section>
+
+      <section class="section alt" id="routes">
+        <div class="container">
+          <div class="section-heading">
+            <h2>Stable routes.</h2>
+            <p>The route shape mirrors the shared adapter contract for users, posts, and search.</p>
+          </div>
+          <div class="code-panel" aria-label="HTTP Gateway routes">
+            <div class="code-title">
+              <span>routes</span>
+              <span>HTTP</span>
+            </div>
+            <pre><code>GET /health
+GET /v1/:platform/users/:username
+GET /v1/:platform/users/:username/posts?total=20
+GET /v1/:platform/posts/:postId
+GET /v1/:platform/search?q=BTC</code></pre>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="container">
+          <div class="section-heading">
+            <h2>Where the Gateway helps.</h2>
+            <p>Use the Gateway when the SDK should be centralized instead of embedded into every service.</p>
+          </div>
+          <div class="feature-grid">
+            <article class="tile">
+              <strong>Credential boundary</strong>
+              <p>Keep platform tokens and session details in one Node service instead of passing them to clients.</p>
+            </article>
+            <article class="tile">
+              <strong>Language-neutral access</strong>
+              <p>Go, Python, Ruby, Java, and other services can call the same adapter layer over HTTP.</p>
+            </article>
+            <article class="tile">
+              <strong>Shared pagination</strong>
+              <p>Expose consistent paging behavior even when each upstream platform uses different cursors.</p>
+            </article>
+            <article class="tile">
+              <strong>Adapter expansion</strong>
+              <p>Add platform adapters in TypeScript without changing every consuming backend.</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="cta" aria-labelledby="gateway-cta-title">
+        <div class="cta-inner">
+          <div>
+            <h2 id="gateway-cta-title">Start with the supported adapters.</h2>
+            <p>
+              The Gateway depends on the same adapter registry as the SDK. Review the platform adapter list before
+              choosing credentials and deployment settings.
+            </p>
+          </div>
+          <a class="button" href="../platform-adapters/">Open adapter list</a>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="footer-inner">
+        <span>Nimbipost</span>
+        <div class="footer-links" aria-label="Footer navigation">
+          <a href="../platform-adapters/">Supported platforms</a>
+          <a href="../http-gateway/">Documentation</a>
+          <a href="https://github.com/HardBrick21/Nimbipost">GitHub repository</a>
+          <a href="../">Home</a>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>

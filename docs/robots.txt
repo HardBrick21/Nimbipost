@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://hardbrick21.github.io/Nimbipost/sitemap.xml
