@@ -1,0 +1,302 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Nimbipost - Social Platform Adapter SDK</title>
+    <meta
+      name="description"
+      content="Nimbipost is a TypeScript SDK that exposes one adapter layer for X/Twitter, Bluesky, Mastodon, Reddit, YouTube, TikTok, Telegram, Threads, and Instagram."
+    />
+    <meta property="og:title" content="Nimbipost" />
+    <meta property="og:description" content="One adapter layer for social platform APIs." />
+    <meta property="og:type" content="website" />
+    <link rel="icon" href="assets/mark.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <header class="site-header">
+      <nav class="nav" aria-label="Primary navigation">
+        <a class="brand" href="#top" aria-label="Nimbipost home">
+          <img class="brand-mark" src="assets/mark.svg" alt="" width="40" height="40" />
+          <span>Nimbipost</span>
+        </a>
+        <div class="nav-links">
+          <a href="#platforms">Platforms</a>
+          <a href="#adapter">Adapter</a>
+          <a href="#gateway">Gateway</a>
+          <a href="#architecture">Architecture</a>
+          <a href="#status">Status</a>
+          <a class="button" href="#status">Project status</a>
+        </div>
+      </nav>
+    </header>
+
+    <main id="main">
+      <section class="hero" id="top">
+        <div class="hero-inner">
+          <div>
+            <p class="eyebrow">TypeScript SDK for social APIs</p>
+            <h1>One adapter layer for social platform integrations.</h1>
+            <p class="hero-copy">
+              Nimbipost gives applications a shared user, post, search, and pagination contract while keeping
+              each platform's authentication, request signing, and API details behind dedicated adapters.
+            </p>
+            <div class="hero-actions" aria-label="Primary actions">
+              <a class="button primary" href="#adapter">View adapter model</a>
+              <a class="button" href="#platforms">Explore platforms</a>
+            </div>
+            <div class="hero-meta" aria-label="Project highlights">
+              <span>9 platform adapters</span>
+              <span>SDK + HTTP Gateway</span>
+              <span>X auth token support</span>
+            </div>
+          </div>
+          <figure class="hero-visual">
+            <img
+              src="assets/platform-flow.svg"
+              alt="Diagram showing app code flowing through PlatformAdapter into platform-specific APIs"
+              width="980"
+              height="620"
+            />
+          </figure>
+        </div>
+      </section>
+
+      <section class="section" id="platforms">
+        <div class="container">
+          <div class="section-heading">
+            <h2>Platform coverage without platform-shaped callers.</h2>
+            <p>
+              Each adapter can expose its own credentials and edge cases while the application talks to a
+              stable common interface.
+            </p>
+          </div>
+          <div class="platform-grid">
+            <article class="tile">
+              <div class="platform-name"><strong>X/Twitter</strong><span class="tag">Primary</span></div>
+              <p>GraphQL reads, guest sessions, login flow, session storage, pagination, and transaction ids.</p>
+            </article>
+            <article class="tile">
+              <div class="platform-name"><strong>Bluesky</strong><span class="tag neutral">AT Protocol</span></div>
+              <p>Public API adapter for profiles, author feeds, post lookup, and search.</p>
+            </article>
+            <article class="tile">
+              <div class="platform-name"><strong>Mastodon</strong><span class="tag neutral">REST</span></div>
+              <p>Instance-scoped account, status, and search operations.</p>
+            </article>
+            <article class="tile">
+              <div class="platform-name"><strong>Reddit</strong><span class="tag neutral">OAuth</span></div>
+              <p>User submissions, post lookup, and search through OAuth API endpoints.</p>
+            </article>
+            <article class="tile">
+              <div class="platform-name"><strong>YouTube</strong><span class="tag neutral">Data API</span></div>
+              <p>Channel, video, and search reads with API-key or bearer-token configuration.</p>
+            </article>
+            <article class="tile">
+              <div class="platform-name"><strong>TikTok</strong><span class="tag neutral">Display API</span></div>
+              <p>Authenticated user and video-list reads for approved Display API apps.</p>
+            </article>
+            <article class="tile">
+              <div class="platform-name"><strong>Telegram</strong><span class="tag neutral">Bot API</span></div>
+              <p>Bot identity and update-backed reads through bot-token credentials.</p>
+            </article>
+            <article class="tile">
+              <div class="platform-name"><strong>Threads</strong><span class="tag neutral">Graph</span></div>
+              <p>Graph API profile and thread reads with access token and user id.</p>
+            </article>
+            <article class="tile">
+              <div class="platform-name"><strong>Instagram</strong><span class="tag neutral">Graph</span></div>
+              <p>Graph API profile and media reads with access token and user id.</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="section alt" id="adapter">
+        <div class="container">
+          <div class="section-heading">
+            <h2>A compact contract for common social workflows.</h2>
+            <p>
+              The public shape favors generic post terminology, with X/Twitter aliases retained where existing
+              integrations need them.
+            </p>
+          </div>
+          <div class="code-panel" aria-label="TypeScript adapter usage example">
+            <div class="code-title">
+              <span>src/app.ts</span>
+              <span>TypeScript</span>
+            </div>
+            <pre><code><span class="keyword">import</span> { createPlatformAdapter } <span class="keyword">from</span> <span class="string">'nimbipost'</span>;
+
+<span class="keyword">const</span> platform = createPlatformAdapter(<span class="string">'x'</span>, {
+  authToken: process.env.X_AUTH_TOKEN,
+});
+
+<span class="keyword">const</span> userId = <span class="keyword">await</span> platform.getUserId(<span class="string">'barton6026'</span>);
+<span class="keyword">const</span> posts = <span class="keyword">await</span> platform.getUserPosts(userId, { total: 100 });
+<span class="keyword">const</span> post = <span class="keyword">await</span> platform.getPost(<span class="string">'1234567890'</span>);
+<span class="keyword">const</span> results = <span class="keyword">await</span> platform.search(<span class="string">'BTC'</span>);
+<span class="keyword">const</span> following = <span class="keyword">await</span> platform.getFriends?.(userId, {
+  following: true,
+  total: 20,
+});
+
+<span class="comment">// X/Twitter compatibility aliases remain available:</span>
+<span class="keyword">const</span> tweets = <span class="keyword">await</span> platform.getUserTweets?.(userId);</code></pre>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="gateway">
+        <div class="container">
+          <div class="section-heading">
+            <h2>Run the SDK as a standalone HTTP Gateway.</h2>
+            <p>
+              Non-Node services can call Nimbipost over HTTP while the Gateway keeps platform credentials,
+              sessions, request signing, and pagination inside the Node process.
+            </p>
+          </div>
+          <div class="code-panel" aria-label="HTTP Gateway usage example">
+            <div class="code-title">
+              <span>gateway</span>
+              <span>HTTP</span>
+            </div>
+            <pre><code>npm run build
+X_AUTH_TOKEN=your_auth_token NIMBIPOST_PORT=4334 npm run start:gateway
+
+GET /health
+GET /v1/:platform/users/:username
+GET /v1/:platform/users/:username/posts?total=20
+GET /v1/:platform/posts/:postId
+GET /v1/:platform/search?q=BTC</code></pre>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="features">
+        <div class="container">
+          <div class="section-heading">
+            <h2>Designed for SDK maintainers and app teams.</h2>
+            <p>
+              The project separates shared interface decisions from the platform details that change most often.
+            </p>
+          </div>
+          <div class="feature-grid">
+            <article class="tile">
+              <strong>Shared vocabulary</strong>
+              <p>Use posts, users, search, and pagination as the common application-facing language.</p>
+            </article>
+            <article class="tile">
+              <strong>Adapter isolation</strong>
+              <p>Keep auth headers, query shapes, request clients, and response normalization per platform.</p>
+            </article>
+            <article class="tile">
+              <strong>X transaction ids</strong>
+              <p>Inject `X-Client-Transaction-Id` with the local transaction generator integration.</p>
+            </article>
+            <article class="tile">
+              <strong>X auth sessions</strong>
+              <p>Bootstrap `auth_token` sessions with the matching `ct0` CSRF header for authenticated reads.</p>
+            </article>
+            <article class="tile">
+              <strong>Thin API adapters</strong>
+              <p>Use lightweight official-API adapters as extension points for deeper platform coverage.</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="section alt" id="architecture">
+        <div class="container architecture">
+          <div>
+            <p class="eyebrow">Architecture</p>
+            <h2>Register a platform, keep the caller stable.</h2>
+            <p>
+              `createPlatformAdapter` returns the same public interface for each supported platform. The adapter
+              owns service URLs, credentials, request transport, pagination handling, and platform-specific
+              fallbacks.
+            </p>
+          </div>
+          <div class="steps">
+            <article class="step">
+              <span class="step-number">1</span>
+              <div>
+                <h3>Application calls the generic contract</h3>
+                <p>Business code asks for users, posts, searches, and paginated results.</p>
+              </div>
+            </article>
+            <article class="step">
+              <span class="step-number">2</span>
+              <div>
+                <h3>The factory returns a platform adapter</h3>
+                <p>Adapters are selected by platform name and configured with platform-specific options.</p>
+              </div>
+            </article>
+            <article class="step">
+              <span class="step-number">3</span>
+              <div>
+                <h3>The adapter owns API details</h3>
+                <p>Each implementation maps the common method to the platform's current endpoint and response shape.</p>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="status">
+        <div class="container">
+          <div class="section-heading">
+            <h2>Current implementation status.</h2>
+            <p>
+              The SDK is ready for local development and adapter expansion. Production use still depends on each
+              platform's access policies and credentials.
+            </p>
+          </div>
+          <div class="status-grid">
+            <article class="tile">
+              <strong>Implemented</strong>
+              <ul class="status-list">
+                <li>Generic `PlatformAdapter` method names.</li>
+                <li>Factory support for 9 platforms.</li>
+                <li>X/Twitter guest and auth-token session bootstrap.</li>
+                <li>X/Twitter login, GraphQL, pagination, and transaction-id handling.</li>
+                <li>Standalone HTTP Gateway for SDK access from backend services.</li>
+                <li>Basic read adapters and tests for non-X platforms.</li>
+              </ul>
+            </article>
+            <article class="tile">
+              <strong>Needs live validation</strong>
+              <ul class="status-list">
+                <li>Real token and API-key checks for every external platform.</li>
+                <li>Production end-to-end X/Twitter login and long-running crawl verification.</li>
+                <li>Additional platform-specific write and moderation workflows.</li>
+              </ul>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="cta" aria-labelledby="cta-title">
+        <div class="cta-inner">
+          <div>
+            <h2 id="cta-title">Deploy as a static GitHub Pages site.</h2>
+            <p>
+              This page is plain HTML, CSS, and SVG under `docs/`. Configure GitHub Pages to publish the
+              repository's `/docs` folder and it can be served without a build pipeline.
+            </p>
+          </div>
+          <a class="button" href="#top">Back to top</a>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="footer-inner">
+        <span>Nimbipost</span>
+        <a href="#top">Back to top</a>
+      </div>
+    </footer>
+  </body>
+</html>

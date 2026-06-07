@@ -1,0 +1,11 @@
+<svg width="128" height="128" viewBox="0 0 128 128" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">Nimbipost mark</title>
+  <desc id="desc">Layered adapter blocks with a directional signal.</desc>
+  <rect width="128" height="128" rx="18" fill="#F8FAFC"/>
+  <rect x="14" y="36" width="62" height="54" rx="8" fill="#0F766E"/>
+  <rect x="32" y="20" width="62" height="54" rx="8" fill="#2563EB"/>
+  <rect x="48" y="48" width="62" height="54" rx="8" fill="#111827"/>
+  <path d="M72 52L91 64L72 76V69H38V59H72V52Z" fill="#FFFFFF"/>
+  <circle cx="36" cy="64" r="6" fill="#FFFFFF"/>
+  <circle cx="99" cy="76" r="6" fill="#FFFFFF"/>
+</svg>

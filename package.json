@@ -1,0 +1,48 @@
+{
+  "name": "nimbipost",
+  "version": "0.1.0",
+  "description": "TypeScript SDK with a shared adapter layer for social platform APIs.",
+  "license": "MIT",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "bin": {
+    "nimbipost-gateway": "./dist/gateway/server.js"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    },
+    "./gateway": {
+      "types": "./dist/gateway/server.d.ts",
+      "import": "./dist/gateway/server.js",
+      "require": "./dist/gateway/server.cjs"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "gateway": "npm run build && node dist/gateway/server.js",
+    "start:gateway": "node dist/gateway/server.js",
+    "test": "vitest run",
+    "lint": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@hardbrick21/x-txid-generator": "^1.0.1"
+  },
+  "devDependencies": {
+    "@types/node": "^25.9.2",
+    "tsup": "^8.3.5",
+    "typescript": "^5.6.3",
+    "vitest": "^2.1.8"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
