@@ -38,6 +38,7 @@ x-session*.json
 
 # Local tool caches
 .cache/
+.superpowers/
 .parcel-cache/
 .rollup.cache/
 .tsup/

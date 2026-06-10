@@ -10,7 +10,7 @@
     />
     <meta name="robots" content="index, follow" />
     <meta name="author" content="HardBrick21" />
-    <meta name="theme-color" content="#0f766e" />
+    <meta name="theme-color" content="#0b1220" />
     <link rel="canonical" href="https://hardbrick21.github.io/Nimbipost/" />
     <meta property="og:title" content="Nimbipost - TypeScript Social Platform Adapter SDK" />
     <meta
@@ -71,7 +71,7 @@
           <a href="http-gateway/">Gateway</a>
           <a href="#architecture">Architecture</a>
           <a href="#status">Status</a>
-          <a class="button" href="#status">Project status</a>
+          <a class="button" href="https://github.com/HardBrick21/Nimbipost">GitHub</a>
         </div>
       </nav>
     </header>
@@ -96,14 +96,59 @@
               <span>X auth token support</span>
             </div>
           </div>
-          <figure class="hero-visual">
-            <img
-              src="assets/platform-flow.svg"
-              alt="Diagram showing app code flowing through PlatformAdapter into platform-specific APIs"
-              width="980"
-              height="620"
-            />
-          </figure>
+          <aside class="hero-panel" aria-label="Nimbipost architecture summary">
+            <div class="panel-kicker">Architecture map</div>
+            <div class="flow-card">
+              <div class="flow-node">
+                <span>01</span>
+                <strong>App code</strong>
+                <p>Calls users, posts, search, and pagination methods.</p>
+              </div>
+              <div class="flow-connector" aria-hidden="true"></div>
+              <div class="flow-node primary-node">
+                <span>02</span>
+                <strong>PlatformAdapter</strong>
+                <p>Normalizes credentials, requests, cursors, and responses.</p>
+              </div>
+              <div class="flow-connector" aria-hidden="true"></div>
+              <div class="flow-node">
+                <span>03</span>
+                <strong>Platform APIs</strong>
+                <p>X/Twitter, Bluesky, Mastodon, Reddit, YouTube, and more.</p>
+              </div>
+            </div>
+            <div class="panel-links" aria-label="Popular documentation links">
+              <a href="platform-adapters/">Adapter index</a>
+              <a href="http-gateway/">Gateway routes</a>
+              <a href="x-twitter-adapter/">X/Twitter deep dive</a>
+            </div>
+          </aside>
+        </div>
+      </section>
+
+      <section class="doc-shortcuts" aria-labelledby="shortcuts-title">
+        <div class="container">
+          <div class="shortcut-heading">
+            <p class="eyebrow">Documentation paths</p>
+            <h2 id="shortcuts-title">Choose the entry point that matches your integration.</h2>
+          </div>
+          <div class="shortcut-grid">
+            <a class="shortcut-card" href="platform-adapters/">
+              <span class="shortcut-index">01</span>
+              <strong>Browse platform adapters</strong>
+              <p>Review supported platforms, credential models, and where each adapter fits.</p>
+            </a>
+            <a class="shortcut-card" href="#adapter">
+              <span class="shortcut-index">02</span>
+              <strong>Use the TypeScript SDK</strong>
+              <p>Start from the shared factory and keep application code platform-neutral.</p>
+            </a>
+            <a class="shortcut-card" href="http-gateway/">
+              <span class="shortcut-index">03</span>
+              <strong>Run the HTTP Gateway</strong>
+              <p>Expose the same adapter layer to services that do not run TypeScript directly.</p>
+            </a>
+          </div>
         </div>
       </section>
 
