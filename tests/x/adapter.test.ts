@@ -227,4 +227,112 @@ describe('XAdapter', () => {
     ]);
     expect(requests[0].url).toContain('/graphql/mpMee2WCjo7Nm4gRRHHnvA/Favoriters');
   });
+
+  it('uses HomeLatestTimeline for following timeline with ranking disabled by default', async () => {
+    const { adapter, requests } = createAdapter([
+      {
+        data: {
+          home: {
+            home_timeline_urt: {
+              instructions: [
+                {
+                  type: 'TimelineAddEntries',
+                  entries: [
+                    { entryId: 'tweet-1', content: { itemContent: { id: '1' } } },
+                    { entryId: 'cursor-bottom-1', content: { value: 'bottom' } },
+                  ],
+                },
+              ],
+            },
+          },
+        },
+      },
+    ]);
+
+    const page = await adapter.getFollowingTimeline({ pagination: false });
+
+    expect(page.data).toEqual([
+      { entryId: 'tweet-1', content: { itemContent: { id: '1' } } },
+    ]);
+    expect(page.cursor_endpoint).toBe('bottom');
+    expect(requests[0].url).toContain('/HomeLatestTimeline');
+    expect(JSON.parse(requests[0].params?.variables ?? '{}')).toMatchObject({
+      count: 40,
+      enableRanking: false,
+      includePromotedContent: true,
+    });
+  });
+
+  it('filters following timeline entries by time range before applying total', async () => {
+    const { adapter, requests } = createAdapter([
+      {
+        data: {
+          home: {
+            home_timeline_urt: {
+              instructions: [
+                {
+                  type: 'TimelineAddEntries',
+                  entries: [
+                    timelineTweet('tweet-too-new', 'Sun Jun 14 00:00:00 +0000 2026'),
+                    timelineTweet('tweet-1', 'Sat Jun 13 10:05:14 +0000 2026'),
+                    { entryId: 'cursor-bottom-1', content: { value: 'next-page' } },
+                  ],
+                },
+              ],
+            },
+          },
+        },
+      },
+      {
+        data: {
+          home: {
+            home_timeline_urt: {
+              instructions: [
+                {
+                  type: 'TimelineAddEntries',
+                  entries: [
+                    timelineTweet('tweet-2', 'Fri Jun 12 12:11:32 +0000 2026'),
+                    timelineTweet('tweet-too-old', 'Wed Jun 10 12:00:00 +0000 2026'),
+                    { entryId: 'cursor-bottom-2', content: { value: 'last-page' } },
+                  ],
+                },
+              ],
+            },
+          },
+        },
+      },
+    ]);
+
+    const page = await adapter.getFollowingTimeline({
+      total: 2,
+      since: '2026-06-12T00:00:00Z',
+      until: '2026-06-13T23:59:59Z',
+    });
+
+    expect(page.data.map((entry) => (entry as { entryId: string }).entryId)).toEqual([
+      'tweet-1',
+      'tweet-2',
+    ]);
+    expect(requests).toHaveLength(2);
+    expect(JSON.parse(requests[1].params?.variables ?? '{}')).toMatchObject({
+      cursor: 'next-page',
+    });
+  });
 });
+
+function timelineTweet(entryId: string, createdAt: string) {
+  return {
+    entryId,
+    content: {
+      itemContent: {
+        tweet_results: {
+          result: {
+            legacy: {
+              created_at: createdAt,
+            },
+          },
+        },
+      },
+    },
+  };
+}

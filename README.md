@@ -29,7 +29,8 @@ const search = await x.search('from:elonmusk', { searchFilter: 'Latest' });
 
 Authenticated X/Twitter reads can pass an `authToken`. The adapter will bootstrap
 the matching `ct0` CSRF cookie/header from X before calling authenticated GraphQL
-endpoints.
+endpoints. The same session can read the Following timeline with optional ranked
+ordering and SDK-side time range filtering.
 
 ```ts
 const x = createPlatformAdapter('x', {
@@ -37,6 +38,12 @@ const x = createPlatformAdapter('x', {
 });
 
 const userId = await x.getUserId('barton6026');
+const followingTimeline = await x.getFollowingTimeline?.({
+  total: 20,
+  enableRanking: false,
+  since: '2026-06-01T00:00:00Z',
+  until: '2026-06-13T23:59:59Z',
+});
 const following = await x.getFriends?.(userId, {
   following: true,
   total: 20,
@@ -97,6 +104,10 @@ interface PlatformAdapter {
     query: string,
     options?: PaginationOptions,
   ): Promise<PaginatedResult>;
+
+  getFollowingTimeline?(
+    options?: FollowingTimelineOptions,
+  ): Promise<PaginatedResult>;
 }
 ```
 
@@ -105,7 +116,12 @@ Optional capabilities:
 - Session lifecycle: `generateSession`, `login`, `loggedIn`, `saveSession`, `loadSession`.
 - API refresh: `updateApi`.
 - Batch users: `getMultipleUsersData`.
-- Platform-specific reads: media, likes, reposts, friends, lists, topics, and highlights.
+- Platform-specific reads: media, likes, reposts, friends, lists, topics, Following timeline, and highlights.
+
+`FollowingTimelineOptions` extends pagination with `enableRanking`, `since`, and
+`until`. X/Twitter does not expose a stable server-side time filter for this
+timeline, so `since` and `until` are applied inside the SDK after each cursor
+page is fetched.
 
 ## Adapter Examples
 
@@ -243,7 +259,8 @@ generateTransactionId(method: string, path: string): string;
 
 When `authToken` is supplied, the X adapter stores `auth_token`, visits the X
 homepage to collect `ct0`, and adds `X-Csrf-Token` plus `X-Twitter-Auth-Type`.
-This is required for authenticated endpoints such as following/follower lists.
+This is required for authenticated endpoints such as following/follower lists and
+the account's Following timeline.
 
 ## Status
 
@@ -255,7 +272,7 @@ Implemented:
 - X/Twitter `auth_token` session bootstrap with `ct0` CSRF header support.
 - Automatic `X-Client-Transaction-Id` injection for X/Twitter requests.
 - X/Twitter GraphQL endpoint updater.
-- X/Twitter user, post, timeline, search, like, repost, friend, list, and topic read methods.
+- X/Twitter user, post, home timeline, Following timeline, search, like, repost, friend, list, and topic read methods.
 - Standalone HTTP Gateway for SDK access from non-Node services.
 - Basic read adapters and test coverage for non-X platforms.
 

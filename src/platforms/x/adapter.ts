@@ -1,5 +1,6 @@
 import { UnsupportedOperationError } from '../../core/errors';
 import type {
+  FollowingTimelineOptions,
   PaginatedResult,
   PaginationOptions,
   PlatformAdapter,
@@ -374,6 +375,32 @@ export class XAdapter implements PlatformAdapter {
     ], options);
   }
 
+  async getFollowingTimeline(
+    options: FollowingTimelineOptions = {},
+  ): Promise<PaginatedResult> {
+    const request = this.generateRequestData(
+      X_PATHS.FOLLOWING_TIMELINE_ENDPOINT,
+      {
+        count: 40,
+        enableRanking: options.enableRanking ?? false,
+        includePromotedContent: true,
+      },
+      { additionalFeatures: true },
+    );
+    const dataPath = [
+      'data',
+      'home',
+      'home_timeline_urt',
+      'instructions',
+    ];
+
+    if (options.since === undefined && options.until === undefined) {
+      return this.paginate(request, dataPath, options);
+    }
+
+    return this.paginateWithTimeRange(request, dataPath, options);
+  }
+
   async getListTweets(
     listId: string | number,
     options: PaginationOptions = {},
@@ -701,6 +728,74 @@ export class XAdapter implements PlatformAdapter {
     });
   }
 
+  private async paginateWithTimeRange(
+    request: { url: string; params: Record<string, string> },
+    dataPath: string[],
+    options: FollowingTimelineOptions,
+  ): Promise<PaginatedResult> {
+    const sinceTime = parseTimelineBoundary(options.since, 'since');
+    const untilTime = parseTimelineBoundary(options.until, 'until');
+
+    if (
+      sinceTime !== undefined &&
+      untilTime !== undefined &&
+      sinceTime > untilTime
+    ) {
+      throw new Error('since must be before until.');
+    }
+
+    const requestClient = await this.getRequestClient();
+    const result: PaginatedResult = {
+      data: [],
+      cursor_endpoint: null,
+      has_next_page: true,
+      api_rate_limit: undefined,
+    };
+    const shouldPaginate = options.pagination ?? true;
+    const shouldStopAtSince = !options.enableRanking && sinceTime !== undefined;
+    let cursor = options.endCursor;
+
+    while (result.has_next_page) {
+      const page = await handleTimelinePagination({
+        requestClient,
+        url: request.url,
+        params: request.params,
+        dataPath,
+        endCursor: cursor,
+        pagination: false,
+      });
+      const remaining =
+        options.total === undefined ? undefined : options.total - result.data.length;
+      const filtered = page.data
+        .filter((entry) => timelineEntryInRange(entry, sinceTime, untilTime))
+        .slice(0, remaining);
+
+      result.data.push(...filtered);
+      result.api_rate_limit = page.api_rate_limit;
+      result.cursor_endpoint = page.cursor_endpoint;
+
+      const reachedTotal =
+        options.total !== undefined && result.data.length >= options.total;
+      const reachedSince =
+        shouldStopAtSince &&
+        page.data.some((entry) => {
+          const createdTime = timelineEntryCreatedTime(entry);
+          return createdTime !== undefined && createdTime < sinceTime;
+        });
+
+      result.has_next_page = Boolean(
+        page.has_next_page &&
+          page.cursor_endpoint &&
+          shouldPaginate &&
+          !reachedTotal &&
+          !reachedSince,
+      );
+      cursor = page.cursor_endpoint ?? undefined;
+    }
+
+    return result;
+  }
+
   private async getRequestClient(): Promise<XAdapterRequestClient> {
     if (!this.requestClient && this.autoInit) {
       await this.init();
@@ -730,4 +825,68 @@ function getPath(source: unknown, path: string[]): unknown {
 
     return undefined;
   }, source);
+}
+
+const TIMELINE_CREATED_AT_PATHS = [
+  ['content', 'itemContent', 'tweet_results', 'result', 'legacy', 'created_at'],
+  ['content', 'itemContent', 'tweetResult', 'result', 'legacy', 'created_at'],
+  ['content', 'itemContent', 'tweet', 'legacy', 'created_at'],
+  ['content', 'itemContent', 'legacy', 'created_at'],
+  ['legacy', 'created_at'],
+] as const;
+
+function parseTimelineBoundary(
+  value: Date | string | undefined,
+  name: string,
+): number | undefined {
+  if (value === undefined) {
+    return undefined;
+  }
+
+  const time = value instanceof Date ? value.getTime() : Date.parse(value);
+
+  if (Number.isNaN(time)) {
+    throw new Error(`Invalid ${name} date.`);
+  }
+
+  return time;
+}
+
+function timelineEntryInRange(
+  entry: unknown,
+  sinceTime: number | undefined,
+  untilTime: number | undefined,
+): boolean {
+  const createdTime = timelineEntryCreatedTime(entry);
+
+  if (createdTime === undefined) {
+    return false;
+  }
+
+  if (sinceTime !== undefined && createdTime < sinceTime) {
+    return false;
+  }
+
+  if (untilTime !== undefined && createdTime > untilTime) {
+    return false;
+  }
+
+  return true;
+}
+
+function timelineEntryCreatedTime(entry: unknown): number | undefined {
+  for (const path of TIMELINE_CREATED_AT_PATHS) {
+    const createdAt = getPath(entry, [...path]);
+
+    if (typeof createdAt !== 'string') {
+      continue;
+    }
+
+    const time = Date.parse(createdAt);
+    if (!Number.isNaN(time)) {
+      return time;
+    }
+  }
+
+  return undefined;
 }

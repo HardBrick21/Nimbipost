@@ -236,6 +236,11 @@
 <span class="keyword">const</span> posts = <span class="keyword">await</span> platform.getUserPosts(userId, { total: 100 });
 <span class="keyword">const</span> post = <span class="keyword">await</span> platform.getPost(<span class="string">'1234567890'</span>);
 <span class="keyword">const</span> results = <span class="keyword">await</span> platform.search(<span class="string">'BTC'</span>);
+<span class="keyword">const</span> followingTimeline = <span class="keyword">await</span> platform.getFollowingTimeline?.({
+  total: 20,
+  enableRanking: false,
+  since: <span class="string">'2026-06-01T00:00:00Z'</span>,
+});
 <span class="keyword">const</span> following = <span class="keyword">await</span> platform.getFriends?.(userId, {
   following: true,
   total: 20,
@@ -362,6 +367,7 @@ GET /v1/:platform/search?q=BTC</code></pre>
                 <li>Factory support for 9 platforms.</li>
                 <li>X/Twitter guest and auth-token session bootstrap.</li>
                 <li>X/Twitter login, GraphQL, pagination, and transaction-id handling.</li>
+                <li>X/Twitter Following timeline reads with optional ranked ordering and SDK-side time filters.</li>
                 <li>Standalone HTTP Gateway for SDK access from backend services.</li>
                 <li>Basic read adapters and tests for non-X platforms.</li>
               </ul>

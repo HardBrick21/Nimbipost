@@ -104,6 +104,15 @@
             <p>Use these summaries to choose credentials and understand what each adapter normalizes.</p>
           </div>
           <div class="article-grid">
+            <article class="tile article-card" id="x">
+              <h2>X/Twitter adapter</h2>
+              <p>Primary GraphQL adapter for profiles, posts, home and Following timelines, search, and social graph reads.</p>
+              <ul>
+                <li>Factory name: <code>x</code></li>
+                <li>Credential model: guest session, account login, saved session, or <code>X_AUTH_TOKEN</code>.</li>
+                <li>Best fit: session-aware X/Twitter reads with pagination, transaction ids, and optional Following timeline time filters.</li>
+              </ul>
+            </article>
             <article class="tile article-card" id="bluesky">
               <h2>Bluesky adapter</h2>
               <p>AT Protocol public API reads for profiles, author feeds, post lookup, and search.</p>

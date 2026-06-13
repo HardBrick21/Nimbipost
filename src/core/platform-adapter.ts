@@ -22,6 +22,12 @@ export interface PaginatedResult<T = unknown> {
   api_rate_limit?: unknown;
 }
 
+export interface FollowingTimelineOptions extends PaginationOptions {
+  enableRanking?: boolean;
+  since?: Date | string;
+  until?: Date | string;
+}
+
 export interface PlatformAdapter {
   readonly platform: PlatformName;
   init(): Promise<void>;
@@ -57,6 +63,9 @@ export interface PlatformAdapter {
     options?: PaginationOptions,
   ): Promise<PaginatedResult>;
   getUserTimeline?(options?: PaginationOptions): Promise<PaginatedResult>;
+  getFollowingTimeline?(
+    options?: FollowingTimelineOptions,
+  ): Promise<PaginatedResult>;
   getListTweets?(
     listId: string | number,
     options?: PaginationOptions,

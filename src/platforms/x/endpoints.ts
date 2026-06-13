@@ -15,6 +15,7 @@ export const X_PATHS = {
   USER_TWEETS_AND_REPLIES_ENDPOINT:
     'xdqXQQg4vOBF9Np6VtUsdw/UserTweetsAndReplies',
   HOME_TIMELINE_ENDPOINT: 'JiwGbpAMYewh2bLC2j1guQ/HomeTimeline',
+  FOLLOWING_TIMELINE_ENDPOINT: 'n2m8OTpLdsM3Zhv33ljKoA/HomeLatestTimeline',
   TWEETS_LIST_ENDPOINT: 'R36US0qG-bOk3ryAYswZmA/ListLatestTweetsTimeline',
   TOPIC_TWEETS_ENDPOINT: 'KDCkc4PZY-sCy_L-scQImw/TopicLandingPage',
   TWEET_DETAILS_ENDPOINT: 'RguQ9yvaXf-EETmDagsLzg/TweetDetail',

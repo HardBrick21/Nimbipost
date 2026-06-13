@@ -12,6 +12,7 @@ import { XAdapter, type XAdapterOptions } from './platforms/x/adapter';
 
 export { RateLimitError, UnsupportedOperationError } from './core/errors';
 export type {
+  FollowingTimelineOptions,
   PaginatedResult,
   PaginationOptions,
   PlatformAdapter,

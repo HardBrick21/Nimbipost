@@ -6,7 +6,7 @@
     <title>X/Twitter Adapter - Nimbipost TypeScript SDK</title>
     <meta
       name="description"
-      content="Understand the Nimbipost X/Twitter adapter for GraphQL reads, guest sessions, auth-token bootstrap, pagination, and transaction ids."
+      content="Understand the Nimbipost X/Twitter adapter for GraphQL reads, Following timeline access, guest sessions, auth-token bootstrap, pagination, and transaction ids."
     />
     <meta name="robots" content="index, follow" />
     <meta name="author" content="HardBrick21" />
@@ -15,7 +15,7 @@
     <meta property="og:title" content="X/Twitter Adapter - Nimbipost TypeScript SDK" />
     <meta
       property="og:description"
-      content="GraphQL reads, guest sessions, auth-token bootstrap, pagination, and transaction-id support for X/Twitter integrations."
+      content="GraphQL reads, Following timeline access, guest sessions, auth-token bootstrap, pagination, and transaction-id support for X/Twitter integrations."
     />
     <meta property="og:type" content="article" />
     <meta property="og:url" content="https://hardbrick21.github.io/Nimbipost/x-twitter-adapter/" />
@@ -27,7 +27,7 @@
     <meta name="twitter:title" content="X/Twitter Adapter - Nimbipost TypeScript SDK" />
     <meta
       name="twitter:description"
-      content="GraphQL reads, guest sessions, auth-token bootstrap, pagination, and transaction-id support for X/Twitter integrations."
+      content="GraphQL reads, Following timeline access, guest sessions, auth-token bootstrap, pagination, and transaction-id support for X/Twitter integrations."
     />
     <meta name="twitter:image" content="https://hardbrick21.github.io/Nimbipost/assets/logo.svg" />
     <link rel="icon" href="../assets/mark.svg" type="image/svg+xml" />
@@ -38,7 +38,7 @@
         "@type": "TechArticle",
         "headline": "Nimbipost X/Twitter adapter",
         "url": "https://hardbrick21.github.io/Nimbipost/x-twitter-adapter/",
-        "description": "X/Twitter GraphQL reads, guest sessions, auth-token bootstrap, pagination, and transaction-id support in Nimbipost.",
+        "description": "X/Twitter GraphQL reads, Following timeline access, guest sessions, auth-token bootstrap, pagination, and transaction-id support in Nimbipost.",
         "about": ["X API", "Twitter", "GraphQL", "TypeScript SDK", "Social media API"]
       }
     </script>
@@ -68,7 +68,8 @@
           <h1>X/Twitter adapter for GraphQL reads and session-aware workflows.</h1>
           <p>
             The X/Twitter adapter is the deepest Nimbipost implementation. It supports guest sessions,
-            auth-token bootstrap, login flow pieces, GraphQL pagination, model normalization, and transaction ids.
+            auth-token bootstrap, login flow pieces, Following timeline reads, GraphQL pagination,
+            model normalization, and transaction ids.
           </p>
           <div class="hero-actions" aria-label="Page actions">
             <a class="button primary" href="#usage">View usage</a>
@@ -86,7 +87,7 @@
           <div class="feature-grid">
             <article class="tile">
               <strong>GraphQL reads</strong>
-              <p>Resolve users, posts, timelines, friends, and search results through normalized SDK methods.</p>
+              <p>Resolve users, posts, home and Following timelines, friends, and search results through normalized SDK methods.</p>
             </article>
             <article class="tile">
               <strong>Session bootstrap</strong>
@@ -94,7 +95,7 @@
             </article>
             <article class="tile">
               <strong>Pagination</strong>
-              <p>Keep caller-facing pagination stable while the adapter handles upstream cursors.</p>
+              <p>Keep caller-facing pagination stable while the adapter handles upstream cursors and SDK-side time filters.</p>
             </article>
             <article class="tile">
               <strong>Transaction ids</strong>
@@ -123,6 +124,12 @@
 
 <span class="keyword">const</span> userId = <span class="keyword">await</span> x.getUserId(<span class="string">'barton6026'</span>);
 <span class="keyword">const</span> posts = <span class="keyword">await</span> x.getUserPosts(userId, { total: 100 });
+<span class="keyword">const</span> followingTimeline = <span class="keyword">await</span> x.getFollowingTimeline?.({
+  total: 20,
+  enableRanking: false,
+  since: <span class="string">'2026-06-01T00:00:00Z'</span>,
+  until: <span class="string">'2026-06-13T23:59:59Z'</span>,
+});
 <span class="keyword">const</span> search = <span class="keyword">await</span> x.search(<span class="string">'from:barton6026'</span>, {
   searchFilter: <span class="string">'Latest'</span>,
 });</code></pre>
@@ -142,6 +149,7 @@
             <li><code>getLikedTweets</code> remains as an alias for <code>getLikedPosts</code>.</li>
             <li><code>getTweetLikes</code> remains as an alias for <code>getPostLikes</code>.</li>
             <li><code>getRetweeters</code> remains as an alias for <code>getReposters</code>.</li>
+            <li><code>getFollowingTimeline</code> reads the account's Following timeline with optional <code>enableRanking</code>, <code>since</code>, and <code>until</code> options.</li>
           </ul>
         </div>
       </section>
